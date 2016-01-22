@@ -21,15 +21,11 @@ COPY taiga-back /usr/src/taiga-back
 COPY taiga-front-dist/ /usr/src/taiga-front-dist
 COPY docker-settings.py /usr/src/taiga-back/settings/docker.py
 COPY conf/locale.gen /etc/locale.gen
-COPY conf/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY conf/nginx/taiga.conf /etc/nginx/conf.d/default.conf
-COPY conf/nginx/ssl.conf /etc/nginx/ssl.conf
-COPY conf/nginx/taiga-events.conf /etc/nginx/taiga-events.conf
+COPY conf/nginx/* /etc/nginx/
 
 # Setup symbolic links for configuration files
 RUN mkdir -p /taiga
-COPY conf/taiga/local.py /taiga/local.py
-COPY conf/taiga/conf.json /taiga/conf.json
+COPY conf/taiga/* /taiga/
 RUN ln -s /taiga/local.py /usr/src/taiga-back/settings/local.py \
 	&& ln -s /taiga/conf.json /usr/src/taiga-front-dist/dist/js/conf.json
 
@@ -56,7 +52,6 @@ RUN python manage.py collectstatic --noinput \
 
 EXPOSE 80 443
 
-COPY checkdb.py /checkdb.py
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY [checkdb.py, docker-entrypoint.sh, /]
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
